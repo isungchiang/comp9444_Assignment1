@@ -76,8 +76,8 @@ def onelayer(X, Y, layersize=10):
         batch_xentropy: The cross-entropy loss for each image in the batch
         batch_loss: The average cross-entropy loss of the batch
     """
-    w = tf.get_variable("w", [X.shape[1],layersize], initializer = tf.contrib.layers.xavier_initializer())
-    b = tf.get_variable("b", [layersize], initializer = tf.zeros_initializer())
+    w = tf.Variable(tf.zeros([784,layersize]))
+    b = tf.Variable(tf.zeros([layersize]))
     logits = tf.matmul(X, w) + b
     preds = tf.nn.softmax(logits)
     batch_xentropy = tf.nn.softmax_cross_entropy_with_logits(labels=Y,logits=logits)
@@ -101,10 +101,10 @@ def twolayer(X, Y, hiddensize=30, outputsize=10):
         batch_xentropy: The cross-entropy loss for each image in the batch
         batch_loss: The average cross-entropy loss of the batch
     """
-    w1 = tf.get_variable("w1", [X.shape[1],hiddensize], initializer = tf.contrib.layers.xavier_initializer())
-    b1 = tf.get_variable("b1", [hiddensize], initializer = tf.zeros_initializer())
-    w2 = tf.get_variable("w2", [hiddensize,outputsize], initializer = tf.contrib.layers.xavier_initializer())
-    b2 = tf.get_variable("b2", [outputsize], initializer = tf.zeros_initializer())
+    w1 = weight_variable([784,hiddensize])
+    b1 = bias_variable([hiddensize])
+    w2 = weight_variable([hiddensize,outputsize])
+    b2 = bias_variable([outputsize])
     z1 = tf.matmul(X, w1) + b1
     a1 = tf.nn.relu(z1)
     logits = tf.matmul(a1, w2) + b2
@@ -146,9 +146,9 @@ def convnet(X, Y, convlayer_sizes=[10, 10], \
     conv2 = tf.layers.conv2d(inputs = conv1, filters = convlayer_sizes[1], kernel_size = filter_shape, \
                              padding = padding, activation = tf.nn.relu)
 
-    w1 = weight_variable([28*28*convlayer_sizes[1],1024])
+    w1 = weight_variable([784*convlayer_sizes[1],1024])
     b1 = bias_variable([1024])
-    x1 = tf.reshape(conv2, [-1,28*28*convlayer_sizes[1]])
+    x1 = tf.reshape(conv2, [-1,784*convlayer_sizes[1]])
     y1 = tf.nn.relu(tf.matmul(x1,w1)+b1)
 
     w = weight_variable([1024,outputsize])
